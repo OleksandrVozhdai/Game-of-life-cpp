@@ -1,4 +1,4 @@
-#include <SFML/Graphics.hpp>
+﻿#include <SFML/Graphics.hpp>
 #include <vector>
 #include <iostream>
 
@@ -10,15 +10,6 @@ int cellSize = 8;
 int generations = 0;
 
 vector<vector<int>> grid(rows, vector<int>(columns, 0));
-
-void initializeGrid()
-{
-    grid[1][2] = 1;
-    grid[2][3] = 1;
-    grid[3][1] = 1;
-    grid[3][2] = 1;
-    grid[3][3] = 1;
-}
 
 int LiveNeighbors(const vector<vector<int>>& grid, int x, int y)
 {
@@ -70,9 +61,7 @@ void UpdateGrid(vector<vector<int>>& grid)
 
 int main()
 {
-
-	initializeGrid();
-    sf::RenderWindow window(sf::VideoMode(columns * cellSize, rows * cellSize), "Game Of Life");
+    sf::RenderWindow window(sf::VideoMode(columns * cellSize, rows * cellSize), "Game Of Life (Click!)");
     
     while (window.isOpen()) {
         sf::Event event;
@@ -83,6 +72,22 @@ int main()
             }
         }
 
+        sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+
+        if (mousePosition.x >= 0 && mousePosition.y >= 0 &&
+            mousePosition.x < columns * cellSize && mousePosition.y < rows * cellSize) {
+
+            int cellX = mousePosition.x / cellSize; 
+            int cellY = mousePosition.y / cellSize; 
+
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                grid[cellY][cellX] = 1;
+                grid[cellY+1][cellX] = 1;
+                grid[cellY-1][cellX] = 1;
+                grid[cellY][cellX+1] = 1;
+                grid[cellY][cellX-1] = 1;
+            }
+        }
         UpdateGrid(grid);
 
         window.clear(sf::Color::Black);
@@ -100,8 +105,6 @@ int main()
                 }
             }
         }
-        generations++;
-        cout << "\nGeneration: " << generations;
         window.display();
         sf::sleep(sf::milliseconds(100));
     }
